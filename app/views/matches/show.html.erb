@@ -1,0 +1,10 @@
+<p id="notice"><%= notice %></p>
+
+<p> <%= @match.game1.player.name %> </p>
+<p> <%= @match.game1.word %> </p>
+<p> <%= @match.game2.player.name %> </p>
+<p> <%= @match.game2.word %> </p>
+
+
+<%= link_to 'Edit', edit_match_path(@match) %> |
+<%= link_to 'Back', matches_path %>
