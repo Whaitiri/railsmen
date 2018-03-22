@@ -1,34 +1,18 @@
 class Game < ApplicationRecord
   ALL_LETTERS = 'abcdefghijklmnopqrstuvwxyz'.split('')
   belongs_to :player
-  has_many :matches, inverse_of: 'game1', :class_name => 'Match', :foreign_key => 'game1_id'
-  has_many :matches, inverse_of: 'game2', :class_name => 'Match', :foreign_key => 'game2_id'
+  belongs_to :match
+  validates_associated :match
   validates :player_id, presence: true
 
 
-  def self.init_game
+  def self.init_game(player_input, word_input)
     game = Game.new
-    game.word = generate_word
-    game.current_guess = (game.word.split('').map {'_'}).join
+    game.current_guess = (word_input.split('').map {'_'}).join
     game.current_guesses = ""
     game.guesses_left = 7
-    game.save
+    game.player = player_input
     return game
-  end
-
-  def self.generate_word
-    wordList = []
-    File.open("/usr/share/dict/words").each do |line|
-      line = line.strip
-      if line.strip.length > 7 or line.strip.length < 3
-        next
-      elsif line[0].match(/^[A-Z]/)
-        next
-      else
-        wordList << line.strip
-      end
-    end
-    return wordList[rand(0...wordList.count)]
   end
 
   def remaining_letters
@@ -40,7 +24,7 @@ class Game < ApplicationRecord
     self.current_guesses += input
     i = 0
     guess_fail = 0
-    self.word.split('').each do |letter|
+    self.match.word.split('').each do |letter|
       if letter == input
         self.current_guess[i] = letter
       else
@@ -58,7 +42,7 @@ class Game < ApplicationRecord
   end
 
   def end_turn_check
-    if self.word == self.current_guess
+    if self.match.word == self.current_guess
       return "win"
     elsif self.guesses_left <= 0
       return "loss"

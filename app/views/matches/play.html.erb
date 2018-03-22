@@ -1,0 +1,20 @@
+<%= tag.p(@game.player.name + "'s turn") %>
+<%= tag.p(@game.current_guess.scan(/.{1}/).join(' '))%>
+<%= tag.p('You have ' + @game.guesses_left.to_s + ' guesses remaining.')%>
+<%= form_for @match, url: {action: "play_update"} do |f| %>
+  <%= f.hidden_field :id %>
+  <% Game::ALL_LETTERS.in_groups_of(7, false).each do |letters| %>
+    <% letters.each do |l| %>
+      <% if @game.remaining_letters.include? l %>
+        <%= f.submit l.upcase %>
+      <% elsif @game.match.word.include? l %>
+        <%= f.submit l.upcase, disabled: true, style: 'background-color: green; opacity: 0.3; border-radius: 4px' %>
+      <% else %>
+        <%= f.submit l.upcase, disabled: true, style: 'background-color: red; opacity: 0.3; border-radius: 4px' %>
+      <% end %>
+    <% end %>
+    <%= tag.br %>
+  <% end %>
+<% end %>
+
+<%= link_to 'Back', matches_path %>

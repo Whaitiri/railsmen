@@ -13,23 +13,23 @@
 ActiveRecord::Schema.define(version: 20180319014321) do
 
   create_table "games", force: :cascade do |t|
-    t.string "word"
     t.string "current_guess"
     t.string "current_guesses"
     t.integer "guesses_left"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "player_id"
+    t.integer "match_id"
+    t.index ["match_id"], name: "index_games_on_match_id"
     t.index ["player_id"], name: "index_games_on_player_id"
   end
 
   create_table "matches", force: :cascade do |t|
-    t.integer "game1_id"
-    t.integer "game2_id"
+    t.string "word"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["game1_id"], name: "index_matches_on_game1_id"
-    t.index ["game2_id"], name: "index_matches_on_game2_id"
+    t.integer "current_game_id"
+    t.index ["current_game_id"], name: "index_matches_on_current_game_id"
   end
 
   create_table "players", force: :cascade do |t|

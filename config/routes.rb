@@ -1,5 +1,12 @@
 Rails.application.routes.draw do
-  resources :matches
+  root 'matches#index'
+  resources :matches do
+    member do
+      get 'play', as: :play
+      patch 'play_update', as: :play_update
+    end
+  end
+
   # resources :games
   resources :players
 
