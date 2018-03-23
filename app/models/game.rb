@@ -34,10 +34,10 @@ class Game < ApplicationRecord
     end
 
     unless guess_fail >= i
-      return false
+      return true
     else
       self.guesses_left -= 1
-      return true
+      return false
     end
   end
 

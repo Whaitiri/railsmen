@@ -1,14 +1,12 @@
 class MatchesController < ApplicationController
   before_action :set_match, only: [:show, :play, :play_update, :edit, :update, :destroy]
-  before_action :set_turn_player, only: :play
+  before_action :set_game, only: [:play, :play_update]
 
   def index
     @matches = Match.all
   end
 
   def show
-    # player.each do
-    #   p
   end
 
   def new
@@ -20,34 +18,30 @@ class MatchesController < ApplicationController
   end
 
   def play
-
   end
 
   def play_update
-    @game = @match.games[@match.current_game_id]
     if @game.input_check(params[:commit])
-      return_notice = "Your guess was incorrect..."
-    else
       return_notice = "Your guess was correct!"
+    else
+      return_notice = "Your guess was incorrect..."
     end
 
-    if run_end_turn_checker
-      @game.save
+    if @game.save
+      @game = @match.set_turn_player unless @game.input_check(params[:commit])
+      redirect_to action: "play", id: @match, notice: return_notice
       return
     else
-      if @game.save
-        redirect_to action: "play", id: @match, notice: return_notice
-        return
-      else
-        render :edit
-        return
-      end
+      render :edit
+      return
     end
+
   end
 
   def create
     @match = Match.new
     @match.word = Match.generate_word
+    @match.current_game_id = 0
 
     selected_players_array = params[:selected_players].values
     unless selected_players_array.select{ |e| selected_players_array.count(e) > 1 } == []
@@ -89,37 +83,26 @@ class MatchesController < ApplicationController
       @match = Match.find(params[:id])
     end
 
+    def set_game
+      @game = @match.games[@match.current_game_id]
+    end
+
     def match_params
       params.require(:match)
     end
 
-    def set_turn_player
-      @match = Match.find(params[:id])
-      if @match.current_game_id.nil?
-        @match.current_game_id = @match.games.index(@match.games.first)
-      else
-        if @match.current_game_id >= (@match.games.length - 1)
-          @match.current_game_id = 0
-        else
-          @match.current_game_id += 1
-        end
-      end
-      @game = @match.games[@match.current_game_id]
-      @match.save
-    end
-
     def run_end_turn_checker
-      if @game.end_turn_check == "win"
-        flash[:notice] = "you won"
-        redirect_to(action: "postgame", id: @game)
-        return true
-      elsif @game.end_turn_check == "loss"
-        flash[:notice] = "you lost"
-        redirect_to(action: "postgame", id: @game)
-        return true
-      else
-        return false
-      end
+      # if @game.end_turn_check == "win"
+      #   flash[:notice] = "you won"
+      #   redirect_to(action: "play", id: @game)
+      #   return true
+      # elsif @game.end_turn_check == "loss"
+      #   flash[:notice] = "you lost"
+      #   redirect_to(action: "play", id: @game)
+      #   return true
+      # else
+      #   return false
+      # end
     end
 
 end

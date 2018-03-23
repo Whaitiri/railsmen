@@ -18,4 +18,13 @@ class Match < ApplicationRecord
     return wordList[rand(0...wordList.count)]
   end
 
+  def set_turn_player
+    if self.current_game_id >= (self.games.length - 1)
+      self.current_game_id = 0
+    else
+      self.current_game_id += 1
+    end
+    self.save
+    return self.games[self.current_game_id]
+  end
 end
