@@ -1,3 +1,5 @@
+<p id="notice"><%= notice %></p>
+
 <%= tag.p(@game.player.name + "'s turn") %>
 <%= tag.p(@game.current_guess.scan(/.{1}/).join(' '))%>
 <%= tag.p('You have ' + @game.guesses_left.to_s + ' guesses remaining.')%>

@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20180319014321) do
 
   create_table "matches", force: :cascade do |t|
     t.string "word"
+    t.integer "game_won"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "current_game_id"

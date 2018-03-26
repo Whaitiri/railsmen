@@ -22,18 +22,15 @@ class Game < ApplicationRecord
   def input_check(input) #returns false if incorrect letter, true if correct
     input = input.downcase
     self.current_guesses += input
-    i = 0
     guess_fail = 0
-    self.match.word.split('').each do |letter|
+    self.match.word.split('').each_with_index do |letter, i|
       if letter == input
         self.current_guess[i] = letter
       else
         guess_fail += 1
       end
-      i += 1
     end
-
-    unless guess_fail >= i
+    unless guess_fail >= self.match.word.length
       return true
     else
       self.guesses_left -= 1

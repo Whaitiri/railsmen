@@ -14,10 +14,28 @@
   <tbody>
     <% @matches.each do |match| %>
       <tr>
-        <td><%= link_to 'Show', match %></td>
-        <td><%= link_to 'Play', play_match_url(match)%></td>
-        <td><%= link_to 'Destroy', match, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td>
+          <% match.players.each_with_index do |x, i| %>
+            <% unless i == match.players.length - 1 %>
+              <% if match.players.length <= 2 %>
+                <%= "#{x.name}" %>
+              <% else %>
+                <%= "#{x.name}," %>
+              <% end %>
+            <% else %>
+              <%= " and #{x.name}'s Game" %>
+            <% end %>
+          <% end %>
+        </td>
       </tr>
+      <tr>
+        <td><%= link_to 'Show', match %>
+        <% if match.game_won == 0 %>
+        <%= link_to 'Play', play_match_url(match)%>
+          <% end %>
+        <%= link_to 'Destroy', match, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+
     <% end %>
   </tbody>
 </table>

@@ -1,7 +1,15 @@
 class Match < ApplicationRecord
   has_many :games
-  has_many :players, -> {order (:id)}, through: :games
+  has_many :players, through: :games
   validates_length_of :games, minimum: 1, maximum: 2
+
+  def self.init_match
+    match = Match.new
+    match.word = Match.generate_word
+    match.current_game_id = 0
+    match.game_won = 0
+    return match
+  end
 
   def self.generate_word
     wordList = []
@@ -27,4 +35,19 @@ class Match < ApplicationRecord
     self.save
     return self.games[self.current_game_id]
   end
+
+  def check_players
+    no_guess_players = 0
+    self.games.each do |game|
+      if game.guesses_left < 1
+        no_guess_players += 1
+      end
+    end
+    if no_guess_players >= self.players.length
+      return true
+    else
+      return false
+    end
+  end
+
 end
