@@ -4,7 +4,7 @@ class MatchesController < ApplicationController
   before_action :redirect_to_postgame, only: [:play, :show]
 
   def index
-    @matches = Match.all
+    @matches = Match.all.order(game_won: :asc)
   end
 
   def show
@@ -37,7 +37,7 @@ class MatchesController < ApplicationController
     end
 
     if @match.save
-      redirect_to @match, notice: 'Match was successfully created.'
+      redirect_to play_match_url notice: 'Match was successfully created.', id: @match
     else
       render :new
     end
@@ -66,18 +66,12 @@ class MatchesController < ApplicationController
       return_notice = "Your guess was incorrect..."
     end
 
-    if @game.current_guess == @game.match.word
-      return_notice = "#{@game.player.name} has guessed the word!"
-      @match.game_won = 1
+    if @match.check_players || @game.current_guess == @game.match.word
+      @match.game_won = 1 if @game.current_guess == @game.match.word
+      @match.game_won = 2 if @match.check_players
       @match.save
-      redirect_to @match
-    end
-
-    if @match.check_players
-      return_notice = "No guesses left"
-      @match.game_won = 1
-      @match.save
-      redirect_to @match
+      @game.save
+      redirect_to @match, notice: @game.player
       return
     end
 
@@ -101,36 +95,16 @@ class MatchesController < ApplicationController
     end
 
     def match_params
-      params.require(:match)
+      params.require(:match).permit(:word, :game_won, :current_game_id)
     end
 
     def redirect_to_postgame
-      if @match.game_won == 1
+      if @match.game_won == 1 || @match.game_won == 2
+        flash.now[:notice] = "#{@match.games[@match.current_game_id].player.name} won!" if @match.game_won == 1
+        flash.now[:notice] = "You lost..." if @match.game_won == 2
         render :postgame
         return
       end
     end
-    # def end_check
-    #   if @game.guesses_left <= 0
-    #     return_notice = "#{@game.player.name} has no guesses left!"
-    #     @game = @match.set_turn_player
-    #     redirect_back fallback_location: { action: "play", id: @match }, id: @match, notice: return_notice
-    #     return
-    #   end
-    # end
-
-    # def run_end_turn_checker
-      # if @game.end_turn_check == "win"
-      #   flash[:notice] = "you won"
-      #   redirect_to(action: "play", id: @game)
-      #   return true
-      # elsif @game.end_turn_check == "loss"
-      #   flash[:notice] = "you lost"
-      #   redirect_to(action: "play", id: @game)
-      #   return true
-      # else
-      #   return false
-      # end
-    # end
 
 end

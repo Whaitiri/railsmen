@@ -1,4 +1,4 @@
-<p id="notice"><%= notice %></p>
+<%= flash[:notice] %>
 
 <h1>Matches</h1>
 
@@ -15,24 +15,39 @@
     <% @matches.each do |match| %>
       <tr>
         <td>
+          <%= "Match #{match.id}: " %>
           <% match.players.each_with_index do |x, i| %>
+
             <% unless i == match.players.length - 1 %>
+              <strong>
+
               <% if match.players.length <= 2 %>
                 <%= "#{x.name}" %>
               <% else %>
                 <%= "#{x.name}," %>
               <% end %>
+
             <% else %>
               <%= " and #{x.name}'s Game" %>
             <% end %>
+
+          <% end %>
+          </strong>
+          <% if match.game_won == 1 %>
+            <%= tag.i("(W: #{match.games[match.current_game_id].player.name})") %>
+          <% elsif match.game_won == 2 %>
+            <%= tag.i("(L)") %>
           <% end %>
         </td>
       </tr>
       <tr>
-        <td><%= link_to 'Show', match %>
+        <td>
+        <% unless match.game_won == 0 %>
+          <%= link_to 'Show', match %> |
+        <% end %>
         <% if match.game_won == 0 %>
-        <%= link_to 'Play', play_match_url(match)%>
-          <% end %>
+          <%= link_to 'Play', play_match_url(match)%> |
+        <% end %>
         <%= link_to 'Destroy', match, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
 

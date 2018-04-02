@@ -1,10 +1,10 @@
 <p id="notice"><%= notice %></p>
 
-<p>The word is <%= @match.word %>
+<p>Players</p>
 <% @match.games.each do |game|%>
 <p> <%= game.player.name %> </p>
 <% end %>
 
 
-<%= link_to 'Edit', edit_match_path(@match) %> |
+<%= link_to 'Play', play_match_path(@match) %> |
 <%= link_to 'Back', matches_path %>

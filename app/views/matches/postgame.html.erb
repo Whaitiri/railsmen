@@ -1,5 +1,6 @@
-YOU DID IT
+<%= flash[:notice] %>
+<!-- <p id="notice"><%= notice %></p> -->
 
-<p id="notice"><%= notice %></p>
+<p>The word was <%= @match.word %></p>
 
-<p>The word was <%= @match.word %>
+<%= link_to 'Back', matches_path %>
